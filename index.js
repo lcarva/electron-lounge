@@ -10,6 +10,8 @@ function createWindow() {
 	// lol
 	process.argv.push("start");
 	process.argv.push("--private");
+	process.argv.push("--host");
+	process.argv.push("127.0.0.1");
 
 	require("thelounge");
 
