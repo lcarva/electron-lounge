@@ -1,24 +1,19 @@
 "use strict";
 
 const electron = require("electron");
-const path = require("path");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
 
 function createWindow() {
-	process.env.LOUNGE_HOME = path.join(__dirname, "appdata");
-
 	// lol
 	process.argv.push("start");
 	process.argv.push("--private");
 
 	require("thelounge");
 
-	const helper = require("./node_modules/thelounge/src/helper");
-	const manager = require("./node_modules/thelounge/src/clientManager");
-	manager.prototype.addUser("user", helper.password.hash("password"), true);
+	checkUser();
 
 	mainWindow = new BrowserWindow({
 		width: 800,
@@ -42,6 +37,20 @@ function createWindow() {
 
 	mainWindow.webContents.on("will-navigate", handleRedirect);
 	mainWindow.webContents.on("new-window", handleRedirect);
+}
+
+function checkUser() {
+	const manager = require("./node_modules/thelounge/src/clientManager");
+
+	const users = manager.prototype.getUsers();
+
+	if (!users.length) {
+		electron.dialog.showMessageBox({
+			type: "warning",
+			buttons: ["OK"],
+			message: "There are currently no users. Create one with lounge add <name>."
+		});
+	}
 }
 
 app.on("ready", createWindow);
